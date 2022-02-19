@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">WeatherApp</string>
     <string name="weather">Weather</string>
-    <string name="city">Petergof</string>
+    <string name="city">City</string>
     <string name="date">fr, 18 february 21:44</string>
     <string name="degree">1°</string>
     <string name="characteristic_1">Cloudy</string>
