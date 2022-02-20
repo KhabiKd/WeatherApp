@@ -1,10 +1,15 @@
 package com.example.weatherapp;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
@@ -16,6 +21,7 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -29,6 +35,7 @@ import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -77,6 +84,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
 
     public static void hideKeyboard(Activity activity) {
         InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
@@ -141,17 +149,32 @@ public class MainActivity extends AppCompatActivity {
 
             try{
                 JSONObject jsonObject = new JSONObject(result);
-                long temp = Math.round(jsonObject.getJSONObject("main").getDouble("temp"));
+                JSONArray jsonArray = jsonObject.getJSONArray("weather");
+                JSONObject jsonObjectWeather = jsonArray.getJSONObject(0);
+                String description = jsonObjectWeather.getString("description").substring(0,1).toUpperCase(Locale.ROOT) + jsonObjectWeather.getString("description").substring(1);
+                int id = jsonObjectWeather.getInt("id");
+
+                long feels_like = Math.round(jsonObject.getJSONObject("main").getDouble("feels_like"));
                 long tempMin = Math.round(jsonObject.getJSONObject("main").getDouble("temp_min"));
                 long tempMax = Math.round(jsonObject.getJSONObject("main").getDouble("temp_max"));
-                long feels_like = Math.round(jsonObject.getJSONObject("main").getDouble("feels_like"));
+                long temp = Math.round(jsonObject.getJSONObject("main").getDouble("temp"));
 
 
-                mainTemperature.setText("" + temp + "°");
-                mainCharacteristic_1.setText(jsonObject.getJSONObject("weather").getString("description"));
+                mainCharacteristic_3.setText("Feels like " + feels_like + "°");
+                mainCharacteristic_1.setText(description);
                 mainCharacteristic_2.setText(tempMin + "°/" + tempMax + "°");
-                mainCharacteristic_3.setText("Feels like" + feels_like + "°");
-                mainIcon.setImageDrawable(Drawable.createFromPath(jsonObject.getJSONObject("weather").getString("icon")));
+                mainTemperature.setText("" + temp + "°");
+
+                if(id == 800){ mainIcon.setImageResource(R.drawable.weathericon_800); }
+                else if(id == 801){ mainIcon.setImageResource(R.drawable.weathericon_801); }
+                else if(id == 802){ mainIcon.setImageResource(R.drawable.weathericon_802); }
+                else if(id == 803 || id == 804){ mainIcon.setImageResource(R.drawable.weathericon_803_804); }
+                else if((id >= 300 && id <= 321) || (id>=520 && id <=531)){ mainIcon.setImageResource(R.drawable.weathericon_300_321); }
+                else if(id>=500 && id<=504){ mainIcon.setImageResource(R.drawable.weathericon_801); }
+                else if(id>=200 && id<=232){ mainIcon.setImageResource(R.drawable.weathericon_200_232); }
+                else if((id>=600 && id<=622) || id==511) { mainIcon.setImageResource(R.drawable.weathericon_600_622); }
+                else if(id>=701 && id<=781){ mainIcon.setImageResource(R.drawable.weathericon_701_781); }
+
             } catch(JSONException e) {
                 e.printStackTrace();
             }
